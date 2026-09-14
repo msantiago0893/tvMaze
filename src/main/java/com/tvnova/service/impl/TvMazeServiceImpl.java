@@ -5,7 +5,6 @@ import com.tvnova.dto.response.CommentResponse;
 import com.tvnova.dto.response.ShowResponse;
 import com.tvnova.dto.tvmaze.TvMazeNetwork;
 import com.tvnova.dto.tvmaze.TvMazeShow;
-import com.tvnova.entity.CommentEntity;
 import com.tvnova.entity.ShowCacheEntity;
 import com.tvnova.repository.CommentRepository;
 import com.tvnova.repository.ShowCacheRepository;
