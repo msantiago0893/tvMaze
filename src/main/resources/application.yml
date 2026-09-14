@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: tvnova-api
+
+server:
+  port: ${SERVER_PORT:8080}
+
+tvmaze:
+  client:
+    base-url: ${TVMAZE_BASE_URL:http://api.tvmaze.com}
+    connect-timeout: ${TVMAZE_CONNECT_TIMEOUT:3s}
+    read-timeout: ${TVMAZE_READ_TIMEOUT:5s}
+
+logging:
+  level:
+    root: INFO
+    com.tvnova: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
