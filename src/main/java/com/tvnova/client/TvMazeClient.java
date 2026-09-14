@@ -33,7 +33,7 @@ public class TvMazeClient {
     }
   }
 
-  public TvMazeShow getShowById(Integer id) {
+  public TvMazeShow getShowById(long id) {
     try {
       return tvMazeRestClient.get()
         .uri("/shows/{id}", id)

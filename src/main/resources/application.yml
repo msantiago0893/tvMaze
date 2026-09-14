@@ -1,6 +1,9 @@
 spring:
   application:
     name: tvnova-api
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb+srv://mark2026:mongoDB2026@cluster0.t4b6jpu.mongodb.net/tvnova?retryWrites=true&w=majority}
 
 server:
   port: ${SERVER_PORT:8080}

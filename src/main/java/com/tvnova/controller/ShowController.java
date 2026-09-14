@@ -29,7 +29,7 @@ public class ShowController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ShowResponse> getById(@PathVariable Integer id) {
+  public ResponseEntity<ShowResponse> getById(@PathVariable long id) {
     ShowResponse show = tvMazeService.getShowById(id);
 
     return ResponseEntity.ok(show);

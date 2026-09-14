@@ -11,7 +11,7 @@ import java.util.List;
 public class TvMazeShow {
 
   @JsonProperty("id")
-  private Integer id;
+  private long id;
 
   @JsonProperty("name")
   private String name;

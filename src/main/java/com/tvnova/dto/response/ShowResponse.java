@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ShowResponse {
-  private Integer id;
+  private long id;
   private String name;
   private String channel;
   private String summary;

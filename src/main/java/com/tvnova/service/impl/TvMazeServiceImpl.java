@@ -4,16 +4,25 @@ import com.tvnova.client.TvMazeClient;
 import com.tvnova.dto.response.ShowResponse;
 import com.tvnova.dto.tvmaze.TvMazeNetwork;
 import com.tvnova.dto.tvmaze.TvMazeShow;
+import com.tvnova.entity.ShowCacheEntity;
+import com.tvnova.repository.ShowCacheRepository;
 import com.tvnova.service.ITvMazeService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class TvMazeServiceImpl implements ITvMazeService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(TvMazeServiceImpl.class);
+
   private final TvMazeClient tvMazeClient;
+  private final ShowCacheRepository showCacheRepository;
 
   @Override
   public List<ShowResponse> searchShows(String query) {
@@ -23,10 +32,48 @@ public class TvMazeServiceImpl implements ITvMazeService {
   }
 
   @Override
-  public ShowResponse getShowById(Integer id) {
+  public ShowResponse getShowById(long id) {
+    LOG.info("Consultando Show con id {}", id);
+
+    return showCacheRepository.findById(id)
+      .map(this::toShowResponse)
+      .orElseGet(() -> fetchAndCache(id));
+  }
+
+  private ShowResponse fetchAndCache(long id) {
+    LOG.info("Show {} no encontrado en cache, se consultará en API", id);
+
     TvMazeShow show = tvMazeClient.getShowById(id);
 
-    return toShowMapping(show);
+    ShowResponse response = toShowMapping(show);
+
+    saveToCache(response);
+
+    return response;
+  }
+
+  private void saveToCache(ShowResponse show) {
+    ShowCacheEntity entity = new ShowCacheEntity(
+      show.getId(),
+      show.getName(),
+      show.getChannel(),
+      show.getSummary(),
+      show.getGenres(),
+      LocalDateTime.now()
+    );
+    showCacheRepository.save(entity);
+
+    LOG.info("Show guardado en cache - mongodb");
+  }
+
+  private ShowResponse toShowResponse(ShowCacheEntity entity) {
+    return new ShowResponse(
+      entity.getId(),
+      entity.getName(),
+      entity.getChannel(),
+      entity.getSummary(),
+      entity.getGenres() != null ? entity.getGenres() : List.of()
+    );
   }
 
   private ShowResponse toShowMapping(TvMazeShow show) {
