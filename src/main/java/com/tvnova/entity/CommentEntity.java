@@ -7,23 +7,21 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
-@Document(collection = "shows")
+@Document(collection = "comments")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShowCacheEntity {
+public class CommentEntity {
+
   @Id
-  private Long id;
+  private String id;
 
-  private String name;
+  private long showId;
 
-  private String channel;
+  private String comment;
 
-  private String summary;
-
-  private List<String> genres;
+  private int rating;
   
-  private LocalDateTime cachedAt;
+  private LocalDateTime createdAt;
 }
