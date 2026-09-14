@@ -1,10 +1,13 @@
 package com.tvnova.service.impl;
 
 import com.tvnova.client.TvMazeClient;
+import com.tvnova.dto.response.CommentResponse;
 import com.tvnova.dto.response.ShowResponse;
 import com.tvnova.dto.tvmaze.TvMazeNetwork;
 import com.tvnova.dto.tvmaze.TvMazeShow;
+import com.tvnova.entity.CommentEntity;
 import com.tvnova.entity.ShowCacheEntity;
+import com.tvnova.repository.CommentRepository;
 import com.tvnova.repository.ShowCacheRepository;
 import com.tvnova.service.ITvMazeService;
 import lombok.AllArgsConstructor;
@@ -23,11 +26,18 @@ public class TvMazeServiceImpl implements ITvMazeService {
 
   private final TvMazeClient tvMazeClient;
   private final ShowCacheRepository showCacheRepository;
+  private final CommentRepository commentRepository;
 
   @Override
   public List<ShowResponse> searchShows(String query) {
     return tvMazeClient.searchShows(query).stream()
-      .map(result -> toShowMapping(result.getShow()))
+      .map(result -> {
+        ShowResponse show = toShowMapping(result.getShow());
+
+        show.setComments(getCommentsByShowId(show.getId()));
+
+        return show;
+      })
       .toList();
   }
 
@@ -35,9 +45,18 @@ public class TvMazeServiceImpl implements ITvMazeService {
   public ShowResponse getShowById(long id) {
     LOG.info("Consultando Show con id {}", id);
 
-    return showCacheRepository.findById(id)
+    ShowResponse response = showCacheRepository.findById(id)
       .map(this::toShowResponse)
       .orElseGet(() -> fetchAndCache(id));
+
+    response.setComments(getCommentsByShowId(id));
+    return response;
+  }
+
+  private List<CommentResponse> getCommentsByShowId(long showId) {
+    return commentRepository.findByShowId(showId).stream()
+      .map(c -> new CommentResponse(c.getComment(), c.getRating()))
+      .toList();
   }
 
   private ShowResponse fetchAndCache(long id) {
@@ -72,7 +91,8 @@ public class TvMazeServiceImpl implements ITvMazeService {
       entity.getName(),
       entity.getChannel(),
       entity.getSummary(),
-      entity.getGenres() != null ? entity.getGenres() : List.of()
+      entity.getGenres() != null ? entity.getGenres() : List.of(),
+      List.of()
     );
   }
 
@@ -82,7 +102,8 @@ public class TvMazeServiceImpl implements ITvMazeService {
       show.getName(),
       resolveChannel(show.getNetwork(), show.getWebChannel()),
       show.getSummary(),
-      show.getGenres() != null ? show.getGenres() : List.of()
+      show.getGenres() != null ? show.getGenres() : List.of(),
+      List.of()
     );
   }
 
