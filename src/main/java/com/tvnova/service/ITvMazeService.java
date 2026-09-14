@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ITvMazeService {
   List<ShowResponse> searchShows(String query);
+
+  ShowResponse getShowById(Integer id);
 }

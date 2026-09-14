@@ -22,6 +22,13 @@ public class TvMazeServiceImpl implements ITvMazeService {
       .toList();
   }
 
+  @Override
+  public ShowResponse getShowById(Integer id) {
+    TvMazeShow show = tvMazeClient.getShowById(id);
+
+    return toShowMapping(show);
+  }
+
   private ShowResponse toShowMapping(TvMazeShow show) {
     return new ShowResponse(
       show.getId(),

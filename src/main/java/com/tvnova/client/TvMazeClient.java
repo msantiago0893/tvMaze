@@ -1,6 +1,7 @@
 package com.tvnova.client;
 
 import com.tvnova.dto.tvmaze.TvMazeSearchResult;
+import com.tvnova.dto.tvmaze.TvMazeShow;
 import com.tvnova.exception.ExternalServiceException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -27,6 +28,17 @@ public class TvMazeClient {
         .body(new ParameterizedTypeReference<>() {});
 
       return results != null ? results : List.of();
+    } catch (Exception ex) {
+      throw new ExternalServiceException("Error al conectar con API TV Maze: " + ex.getMessage());
+    }
+  }
+
+  public TvMazeShow getShowById(Integer id) {
+    try {
+      return tvMazeRestClient.get()
+        .uri("/shows/{id}", id)
+        .retrieve()
+        .body(TvMazeShow.class);
     } catch (Exception ex) {
       throw new ExternalServiceException("Error al conectar con API TV Maze: " + ex.getMessage());
     }
